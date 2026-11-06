@@ -1,4 +1,4 @@
-# Git Profile & PortableGit Workspace Switcher
+# Git Profile & Workspace Sync
 
 [![Visual Studio Code](https://img.shields.io/badge/VS%20Code-Extension-007ACC?logo=visualstudiocode&logoColor=white)](https://marketplace.visualstudio.com)
 [![TypeScript](https://img.shields.io/badge/Language-TypeScript%205-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -17,7 +17,7 @@ When switching between multiple Git/GitHub accounts on a single development mach
 * ⚠️ **Credential Manager Conflicts:** Windows Credential Manager or Git Credential Manager caches a single account token, causing `403 Permission Denied` when pushing to a repository owned by your other account.
 * ⚠️ **Scattered Repositories:** Cloned repos end up mixed together on your local drive without clear per-account separation.
 
-**`vscode-git-profile-switch` solves all three problems in one click.**
+**`git-profile-sync` solves all three problems in one click.**
 
 ---
 
@@ -54,7 +54,7 @@ PortableGit/
 * **Interactive Status Bar Item:** Shows active profile label, GitHub username, and repository sync state at a glance.
 
 ### 4. 🧠 Smart Workspace Auto-Detection
-* When you open a repository, the extension automatically detects the remote owner and switches your active profile to match the repository—avoiding accidental cross-account commits.
+* When you open a repository, the extension automatically detects the remote owner and switches your active profile to match the repository, avoiding accidental cross-account commits.
 
 ---
 
@@ -65,11 +65,11 @@ Install directly from the packaged `.vsix` file:
 * Open VS Code.
 * Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on macOS) and type:  
   **`Extensions: Install from VSIX...`**
-* Select `vscode-git-profile-switch-1.0.0.vsix`.
+* Select `git-profile-sync-1.0.0.vsix`.
 
 Alternatively via terminal:
 ```powershell
-code --install-extension vscode-git-profile-switch-1.0.0.vsix
+code --install-extension git-profile-sync-1.0.0.vsix
 ```
 
 ### 2. Create Your Profiles
