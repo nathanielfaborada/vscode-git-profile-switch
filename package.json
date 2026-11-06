@@ -4,6 +4,7 @@
   "description": "Dynamically switch Git commit author, GitHub push credentials, and PortableGit/<username> repositories with zero identity mismatch.",
   "version": "1.0.0",
   "publisher": "nathaniel-faborada",
+  "icon": "icon.png",
   "license": "MIT",
   "repository": {
     "type": "git",
