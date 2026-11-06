@@ -1,0 +1,119 @@
+{
+  "name": "vscode-git-profile-switch",
+  "displayName": "Git Profile & PortableGit Workspace Switcher",
+  "description": "Dynamically switch Git commit author, GitHub push credentials, and PortableGit/<username> repositories with zero identity mismatch.",
+  "version": "1.0.0",
+  "publisher": "nathanielfaborada",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nathanielfaborada/vscode-git-profile-switch.git"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "SCM Providers",
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "gitProfileSwitch.switch",
+        "title": "Git Profile: Switch Profile & Sync Workspace",
+        "icon": "$(account)"
+      },
+      {
+        "command": "gitProfileSwitch.add",
+        "title": "Git Profile: Add New Profile (Create)",
+        "icon": "$(add)"
+      },
+      {
+        "command": "gitProfileSwitch.edit",
+        "title": "Git Profile: Edit Profile (Update)",
+        "icon": "$(edit)"
+      },
+      {
+        "command": "gitProfileSwitch.delete",
+        "title": "Git Profile: Delete Profile (Delete)",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "gitProfileSwitch.syncRepos",
+        "title": "Git Profile: Sync & Auto-Clone All GitHub Repos to PortableGit",
+        "icon": "$(repo-clone)"
+      },
+      {
+        "command": "gitProfileSwitch.organizeExisting",
+        "title": "Git Profile: Organize Existing PortableGit Repos into Profile Folders",
+        "icon": "$(folder-library)"
+      },
+      {
+        "command": "gitProfileSwitch.verify",
+        "title": "Git Profile: Verify Active Identity & GitHub Token",
+        "icon": "$(verified)"
+      },
+      {
+        "command": "gitProfileSwitch.openProfileFolder",
+        "title": "Git Profile: Open Active Profile Folder in VS Code",
+        "icon": "$(folder-opened)"
+      }
+    ],
+    "configuration": {
+      "title": "Git Profile Switch",
+      "properties": {
+        "gitProfileSwitch.portableGitRoot": {
+          "type": "string",
+          "default": "C:\\Users\\user\\Downloads\\PortableGit",
+          "description": "Root path to PortableGit where per-user folders (PortableGit/<username>/<repos>) are stored."
+        },
+        "gitProfileSwitch.profiles": {
+          "type": "array",
+          "default": [],
+          "description": "Saved Git profiles (tokens are stored encrypted in VS Code SecretStorage)."
+        },
+        "gitProfileSwitch.activeProfileId": {
+          "type": "string",
+          "default": "",
+          "description": "Currently active Git profile ID."
+        },
+        "gitProfileSwitch.autoCloneOnSwitch": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically fetch and clone missing GitHub repositories into PortableGit/<username> when switching profiles."
+        },
+        "gitProfileSwitch.autoOpenProfileWorkspace": {
+          "type": "string",
+          "enum": [
+            "prompt",
+            "always",
+            "never"
+          ],
+          "default": "prompt",
+          "description": "Whether to switch the VS Code Explorer workspace to PortableGit/<username> after switching profiles."
+        },
+        "gitProfileSwitch.autoDetectFromRepo": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically detect and apply the matching Git profile based on the open repository path or remote owner."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch --preserveWatchOutput -p ./",
+    "test": "node ./out/test/runTest.js",
+    "package": "npx @vscode/vsce package --allow-missing-repository"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.4.0"
+  }
+}
