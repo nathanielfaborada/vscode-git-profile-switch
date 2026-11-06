@@ -1,5 +1,5 @@
 {
-  "name": "vscode-git-profile-switch",
+  "name": "git-profile-sync",
   "displayName": "Git Profile & PortableGit Workspace Switcher",
   "description": "Dynamically switch Git commit author, GitHub push credentials, and PortableGit/<username> repositories with zero identity mismatch.",
   "version": "1.0.0",
