@@ -4,7 +4,7 @@ import { ProfileStorage } from '../services/storageService';
 import { SyncCoordinator } from '../sync/syncCoordinator';
 
 interface SwitchQuickPickItem extends vscode.QuickPickItem {
-  action: 'switch' | 'add' | 'edit' | 'delete' | 'sync' | 'organize' | 'verify' | 'openFolder';
+  action: 'switch' | 'add' | 'edit' | 'delete' | 'sync' | 'organize' | 'verify' | 'openFolder' | 'sponsor';
   profile?: GitProfile;
 }
 
@@ -68,11 +68,17 @@ export function registerSwitchCommand(
         label: '$(verified) Verify Active Identity & GitHub Token',
         description: 'Check commit author, push credentials, and GitHub API status',
         action: 'verify',
+      },
+      { label: '', kind: vscode.QuickPickItemKind.Separator, action: 'switch' },
+      {
+        label: '$(heart) Support on Ko-fi (Buy Me a Coffee)',
+        description: 'https://ko-fi.com/nathanielfaborada',
+        action: 'sponsor',
       }
     );
 
     const selected = await vscode.window.showQuickPick(items, {
-      title: 'Git Profile & PortableGit Workspace Switcher',
+      title: 'Git Profile & Workspace Sync',
       placeHolder: 'Select a profile to switch dynamically or choose a management action',
       matchOnDescription: true,
       matchOnDetail: true,
@@ -108,6 +114,8 @@ export function registerSwitchCommand(
       await vscode.commands.executeCommand('gitProfileSwitch.verify');
     } else if (selected.action === 'openFolder') {
       await vscode.commands.executeCommand('gitProfileSwitch.openProfileFolder');
+    } else if (selected.action === 'sponsor') {
+      await vscode.env.openExternal(vscode.Uri.parse('https://ko-fi.com/nathanielfaborada'));
     }
   });
 }

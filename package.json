@@ -5,6 +5,9 @@
   "version": "1.0.0",
   "publisher": "nathaniel-faborada",
   "icon": "icon.png",
+  "sponsor": {
+    "url": "https://ko-fi.com/nathanielfaborada"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",

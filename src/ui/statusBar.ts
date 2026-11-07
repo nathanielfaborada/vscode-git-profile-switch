@@ -47,7 +47,8 @@ export class StatusBarManager implements vscode.Disposable {
       `[$(arrow-swap) Switch Profile](command:gitProfileSwitch.switch) &nbsp;|&nbsp; ` +
       `[$(repo-clone) Sync Repos](command:gitProfileSwitch.syncRepos) &nbsp;|&nbsp; ` +
       `[$(folder-opened) Open Folder](command:gitProfileSwitch.openProfileFolder) &nbsp;|&nbsp; ` +
-      `[$(add) Add](command:gitProfileSwitch.add)`
+      `[$(add) Add](command:gitProfileSwitch.add) &nbsp;|&nbsp; ` +
+      `[$(heart) Ko-fi](https://ko-fi.com/nathanielfaborada)`
     );
 
     this.statusBarItem.tooltip = tooltip;

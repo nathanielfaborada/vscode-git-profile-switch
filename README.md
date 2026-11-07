@@ -1,164 +1,91 @@
 # Git Profile & Workspace Sync
 
-[![Visual Studio Code](https://img.shields.io/badge/VS%20Code-Extension-007ACC?logo=visualstudiocode&logoColor=white)](https://marketplace.visualstudio.com)
-[![TypeScript](https://img.shields.io/badge/Language-TypeScript%205-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+If you use more than one GitHub account on the same computer, such as a personal account and a work or school account, switching between them in VS Code can get messy. It is easy to commit with your personal email on a work repo, run into permission errors when pushing, or mix up project folders on your drive.
 
-A lightweight, powerful Visual Studio Code extension designed for developers juggling multiple GitHub accounts (Personal, Work, Client, or Open Source).
+Git Profile & Workspace Sync lets you switch your Git account from the VS Code status bar in one click.
 
-It dynamically synchronizes your **Git Commit Author (`user.name` & `user.email`)**, **GitHub Push Credentials (PAT / Credential Manager)**, and per-profile **`PortableGit/<username>` repository directories** with zero identity mismatch.
+## What It Does
 
----
+When you pick a profile, the extension updates your Git commit name, email, and GitHub push login at the same time. You do not need to run `git config` commands by hand or clear out Windows Credential Manager every time you change accounts.
 
-## The Problem It Solves
+It also keeps your projects organized on disk by giving each account its own folder:
 
-When switching between multiple Git/GitHub accounts on a single development machine:
-* ⚠️ **Wrong Contributor Attribution:** Committing with a personal email on a company repository, or vice versa, polluting commit histories and contributor graphs.
-* ⚠️ **Credential Manager Conflicts:** Windows Credential Manager or Git Credential Manager caches a single account token, causing `403 Permission Denied` when pushing to a repository owned by your other account.
-* ⚠️ **Scattered Repositories:** Cloned repos end up mixed together on your local drive without clear per-account separation.
-
-**`git-profile-sync` solves all three problems in one click.**
-
----
-
-## Core Features
-
-### 1. 🔄 Multi-Layer Atomic Identity Sync
-Switching profiles instantaneously and safely updates all identity layers in parallel:
-* **Local Workspace Config:** Updates `.git/config` (`user.name`, `user.email`, and authenticated `remote.origin.url`).
-* **Global Git Config:** Updates global `~/.gitconfig` fallback.
-* **PortableGit `includeIf` Rules:** Configures folder-level rules (`PortableGit/<username>/.gitconfig-profile`) ensuring any terminal or external Git tool running inside that folder automatically assumes the correct profile.
-* **Credential Approval:** Feeds authenticated credentials to Git Credential Helper so pushes succeed immediately without interactive password prompts.
-* **Real-Time Config Watcher:** Monitors `.git/config` and heals external overrides or mismatches automatically.
-
-### 2. 📁 `PortableGit/<username>` Workspace Organization
-Organizes your local code into clean, per-profile folder trees:
 ```text
 PortableGit/
- ├── personal-dev/
+ ├── john-dev/
  │    ├── portfolio-site/
  │    └── side-project/
  ├── acme-corp/
  │    ├── core-api/
  │    └── customer-dashboard/
- └── open-source-team/
-      ├── project-alpha/
-      └── project-beta/
+ └── school-projects/
+      └── lab-assignments/
 ```
-* **Auto-Clone Missing Repositories:** Fetches public & private repos accessible by your GitHub Personal Access Token (PAT) and clones missing ones straight into `PortableGit/<username>/`.
-* **Organize Existing Repositories:** Automatically detects standalone repos sitting in the root of `PortableGit/` and moves them into their corresponding user subfolders while preserving `.env`, `.venv`, and `node_modules`.
 
-### 3. 🔐 Encrypted Token Storage & Full Profile Management
-* **Zero Plaintext Secrets:** GitHub Personal Access Tokens (PATs) are stored in VS Code's encrypted `SecretStorage` (backed by Windows Credential Manager / macOS Keychain / Linux Secret Service).
-* **Full CRUD Operations:** Add, edit, test, rotate tokens, and delete profiles directly within VS Code.
-* **Interactive Status Bar Item:** Shows active profile label, GitHub username, and repository sync state at a glance.
+If you connect a GitHub Personal Access Token, the extension can fetch your repositories from GitHub and clone any missing ones into that account's folder. If you already have repositories sitting in your main `PortableGit` folder, it can sort them into the right account folders without touching your `.env` files, virtual environments, or `node_modules`.
 
-### 4. 🧠 Smart Workspace Auto-Detection
-* When you open a repository, the extension automatically detects the remote owner and switches your active profile to match the repository, avoiding accidental cross-account commits.
+When you open a project in VS Code, the extension checks which account owns the repository and switches to the matching profile automatically. Your GitHub tokens are stored in VS Code's built-in secret storage rather than in plain text settings files.
 
----
+## Getting Started
 
-## Quick Start
+### 1. Add a Profile
 
-### 1. Install the Extension
-Install directly from the packaged `.vsix` file:
-* Open VS Code.
-* Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on macOS) and type:  
-  **`Extensions: Install from VSIX...`**
-* Select `git-profile-sync-1.0.0.vsix`.
+1. Open the Command Palette (`Ctrl+Shift+P` on Windows/Linux or `Cmd+Shift+P` on macOS).
+2. Run **Git Profile: Add New Profile (Create)**.
+3. Fill in the prompts:
+   - A short label for the account, such as `Personal` or `Work`.
+   - Your GitHub username (for example, `john-dev`).
+   - The name and email address you want shown on your commits.
+   - Your GitHub Personal Access Token (optional, needed if you want private repo cloning and automatic push login).
 
-Alternatively via terminal:
+### 2. Switch Accounts
+
+Click the profile name in the bottom-left VS Code status bar, or run **Git Profile: Switch Profile & Sync Workspace** from the Command Palette, and select the account you want to use.
+
+## Available Commands
+
+Open the Command Palette (`Ctrl+Shift+P`) and type `Git Profile` to see all actions:
+
+| Command | What it does |
+| :--- | :--- |
+| `Git Profile: Switch Profile & Sync Workspace` | Switch to another saved Git account |
+| `Git Profile: Add New Profile (Create)` | Save a new Git account and token |
+| `Git Profile: Edit Profile (Update)` | Change an account's name, email, or token |
+| `Git Profile: Delete Profile (Delete)` | Remove a saved account and delete its token |
+| `Git Profile: Sync & Auto-Clone All GitHub Repos to PortableGit` | Download missing GitHub repos into the active account folder |
+| `Git Profile: Organize Existing PortableGit Repos into Profile Folders` | Move existing local repos into their matching account folders |
+| `Git Profile: Verify Active Identity & GitHub Token` | Check which name, email, and GitHub account are currently active |
+| `Git Profile: Open Active Profile Folder in VS Code` | Open the folder for the current account in the Explorer sidebar |
+
+## Settings
+
+You can adjust these options in VS Code Settings (`Ctrl+,` and search for `Git Profile Switch`):
+
+| Setting | Default | Description |
+| :--- | :--- | :--- |
+| `gitProfileSwitch.portableGitRoot` | `C:\PortableGit` | Main folder where your per-account folders are stored |
+| `gitProfileSwitch.autoCloneOnSwitch` | `true` | Clone missing GitHub repos automatically when you switch accounts |
+| `gitProfileSwitch.autoOpenProfileWorkspace` | `"prompt"` | Ask before switching the Explorer sidebar to the account's folder (`"prompt"`, `"always"`, or `"never"`) |
+| `gitProfileSwitch.autoDetectFromRepo` | `true` | Switch to the matching profile automatically when you open a repo |
+
+## Installing from a VSIX File
+
+If you are installing the extension manually from a `.vsix` file instead of the Marketplace:
+
+1. Open VS Code.
+2. Press `Ctrl+Shift+P` and run **Extensions: Install from VSIX...**
+3. Pick `git-profile-sync-1.0.0.vsix`.
+
+Or install it from a terminal:
+
 ```powershell
 code --install-extension git-profile-sync-1.0.0.vsix
 ```
 
-### 2. Create Your Profiles
-1. Press `Ctrl+Shift+P` and choose:  
-   **`Git Profile: Add New Profile (Create)`**
-2. Enter profile details:
-   * **Profile Label:** e.g., `Personal`, `Work`, `Open Source`
-   * **GitHub Username:** e.g., `octocat` or `john-dev`
-   * **Git Author Name:** e.g., `John Doe`
-   * **Git Author Email:** e.g., `john.doe@example.com` or `12345678+john-dev@users.noreply.github.com`
-   * **GitHub PAT:** Optional, recommended for private repo sync & push authentication (`repo` scope).
+## Support
 
-### 3. Switch Profiles
-* Click the **Profile indicator** in the VS Code Status Bar (bottom left) or run:  
-  **`Git Profile: Switch Profile & Sync Workspace`**
-* Select your desired profile. All configs and folders sync in seconds.
-
----
-
-## Extension Commands
-
-| Command | Command Identifier | Description |
-| :--- | :--- | :--- |
-| **Switch Profile & Sync Workspace** | `gitProfileSwitch.switch` | Open QuickPick switcher to change active profile and sync configs |
-| **Add New Profile** | `gitProfileSwitch.add` | Create a new Git profile with encrypted GitHub PAT |
-| **Edit Profile** | `gitProfileSwitch.edit` | Update profile metadata, author name/email, or rotate PAT |
-| **Delete Profile** | `gitProfileSwitch.delete` | Delete profile and remove its encrypted secret token |
-| **Sync & Auto-Clone All GitHub Repos** | `gitProfileSwitch.syncRepos` | Fetch remote GitHub repos and clone missing ones to `PortableGit/<username>` |
-| **Organize Existing Repos into Folders** | `gitProfileSwitch.organizeExisting` | Move root repositories into matching `PortableGit/<username>` folders |
-| **Verify Active Identity & Token** | `gitProfileSwitch.verify` | Test and display current commit author, remote origin, and GitHub API auth |
-| **Open Active Profile Folder** | `gitProfileSwitch.openProfileFolder` | Open `PortableGit/<username>` in VS Code Explorer |
-
----
-
-## Configuration Settings
-
-You can customize the extension via VS Code Settings (`Ctrl+,` -> search `Git Profile Switch`):
-
-| Setting | Default | Description |
-| :--- | :--- | :--- |
-| `gitProfileSwitch.portableGitRoot` | `C:\PortableGit` | Path where per-user folders (`PortableGit/<username>/<repos>`) reside. |
-| `gitProfileSwitch.autoCloneOnSwitch` | `true` | Automatically clone missing remote repositories when switching profiles. |
-| `gitProfileSwitch.autoOpenProfileWorkspace` | `"prompt"` | Behavior when switching: `"prompt"`, `"always"`, or `"never"` open profile folder. |
-| `gitProfileSwitch.autoDetectFromRepo` | `true` | Auto-detect and switch profile based on currently active repository remote owner. |
-
----
-
-## Architecture
-
-```mermaid
-flowchart TD
-    A["VS Code Status Bar / QuickPick"] -->|User Selects Profile| B["Sync Coordinator"]
-    B --> C["1. Local Repo (.git/config)"]
-    B --> D["2. Global Git (~/.gitconfig)"]
-    B --> E["3. PortableGit (includeIf rule)"]
-    B --> F["4. Credential Helper (PAT / Token)"]
-    B --> G["5. PortableGit/username/ Workspace"]
-    G -->|Auto-Clone| H["GitHub API (REST / Octokit)"]
-    C --> I["Git Commits & Pushes Authenticated Seamlessly"]
-    D --> I
-    E --> I
-    F --> I
-```
-
----
-
-## Development & Building
-
-To modify or build this extension locally:
-
-```powershell
-# 1. Clone the repository
-git clone https://github.com/your-username/vscode-git-profile-switch.git
-cd vscode-git-profile-switch
-
-# 2. Install dependencies
-npm install
-
-# 3. Compile TypeScript
-npm run compile
-
-# 4. Package into VSIX
-npm run package
-```
-
-* Press **`F5`** inside VS Code to launch the Extension Development Host for debugging.
-
----
+If this extension saves you time, you can [buy me a coffee on Ko-fi](https://ko-fi.com/nathanielfaborada).
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+[MIT License](LICENSE)
