@@ -157,7 +157,7 @@ export class SyncCoordinator implements vscode.Disposable {
 
   public async autoDetectAndSyncOnOpen(): Promise<void> {
     const config = vscode.workspace.getConfiguration('gitProfileSwitch');
-    const autoDetect = config.get<boolean>('autoDetectFromRepo', true);
+    const autoDetect = config.get<boolean>('autoDetectFromRepo', false);
     const currentWorkspace = this.getCurrentWorkspacePath();
 
     if (autoDetect && currentWorkspace) {

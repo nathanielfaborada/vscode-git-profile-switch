@@ -1,11 +1,13 @@
 import * as vscode from 'vscode';
 import { GitProfile } from '../types';
 import { ProfileStorage } from '../services/storageService';
+import { GitHubService } from '../services/githubService';
 import { SyncCoordinator } from '../sync/syncCoordinator';
 import { StatusBarManager } from '../ui/statusBar';
 
 export function registerAddCommand(
   storage: ProfileStorage,
+  githubService: GitHubService,
   coordinator: SyncCoordinator,
   statusBar: StatusBarManager
 ): vscode.Disposable {
@@ -44,10 +46,15 @@ export function registerAddCommand(
       return;
     }
 
+    const resolvedIdentity = await githubService.fetchGitHubUserIdentity(githubUsername.trim());
+    const canonicalLogin = resolvedIdentity?.login || githubUsername.trim();
+    const defaultEmail =
+      resolvedIdentity?.noreplyEmail || `${canonicalLogin}@users.noreply.github.com`;
+
     const gitName = await vscode.window.showInputBox({
       title: 'Add Git Profile (4/6): Git Commit Author Name (user.name)',
       prompt: 'Enter the exact name to record in Git commits',
-      value: githubUsername.trim(),
+      value: canonicalLogin,
       validateInput: (val) => (!val.trim() ? 'Git author name is required' : null),
     });
     if (!gitName) {
@@ -56,8 +63,10 @@ export function registerAddCommand(
 
     const gitEmail = await vscode.window.showInputBox({
       title: 'Add Git Profile (5/6): Git Commit Author Email (user.email)',
-      prompt: 'Enter the email address for Git commits',
-      placeHolder: 'e.g., jane@example.com',
+      prompt:
+        'GitHub-bound noreply email is pre-filled so GitHub always attributes commits to this exact account',
+      value: defaultEmail,
+      placeHolder: defaultEmail,
       validateInput: (val) =>
         !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim())
           ? 'Please enter a valid email address'

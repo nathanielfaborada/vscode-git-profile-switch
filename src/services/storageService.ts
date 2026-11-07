@@ -55,7 +55,34 @@ export class ProfileStorage {
     const config = vscode.workspace.getConfiguration(CONFIG_SECTION);
     const profiles = config.get<GitProfile[]>('profiles', []);
     if (profiles.length > 0) {
-      return profiles;
+      let migrated = false;
+      const updated = profiles.map((p) => {
+        if (
+          p.githubUsername.toLowerCase() === 'nathanielfaborada' &&
+          p.gitEmail.toLowerCase() === 'faboradanathaniel@gmail.com'
+        ) {
+          migrated = true;
+          return {
+            ...p,
+            gitEmail: '143235940+nathanielfaborada@users.noreply.github.com',
+          };
+        }
+        if (
+          p.githubUsername.toLowerCase() === 'powertractire' &&
+          p.gitEmail.toLowerCase() === 'powertractire@users.noreply.github.com'
+        ) {
+          migrated = true;
+          return {
+            ...p,
+            gitEmail: '344656093+PowerTractire@users.noreply.github.com',
+          };
+        }
+        return p;
+      });
+      if (migrated) {
+        await this.saveAllProfiles(updated);
+      }
+      return updated;
     }
 
     const seeded = this.getDefaultProfiles();
@@ -196,9 +223,21 @@ export class ProfileStorage {
         label: 'Nath Personal',
         icon: '$(account)',
         gitName: 'nathanielfaborada',
-        gitEmail: 'faboradanathaniel@gmail.com',
+        gitEmail: '143235940+nathanielfaborada@users.noreply.github.com',
         githubUsername: 'nathanielfaborada',
         autoMatchOwners: ['nathanielfaborada', 'Truck-Tires-Incorporated'],
+        includeForks: false,
+        createdAt: now,
+        updatedAt: now,
+      },
+      {
+        id: 'sudofaboradanathaniel',
+        label: 'Sudo Nath',
+        icon: '$(account)',
+        gitName: 'sudofaboradanathaniel',
+        gitEmail: '345642770+sudofaboradanathaniel@users.noreply.github.com',
+        githubUsername: 'sudofaboradanathaniel',
+        autoMatchOwners: ['sudofaboradanathaniel', 'sudo-spill-rate'],
         includeForks: false,
         createdAt: now,
         updatedAt: now,
@@ -208,7 +247,7 @@ export class ProfileStorage {
         label: 'PowerTractire Company',
         icon: '$(organization)',
         gitName: 'PowerTractire',
-        gitEmail: 'powertractire@users.noreply.github.com',
+        gitEmail: '344656093+PowerTractire@users.noreply.github.com',
         githubUsername: 'PowerTractire',
         autoMatchOwners: ['PowerTractire', 'Power-Tractire-Inc', 'Track-Speed'],
         includeForks: false,

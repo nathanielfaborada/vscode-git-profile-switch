@@ -24,7 +24,7 @@ export function registerAllCommands(
 ): void {
   context.subscriptions.push(
     registerSwitchCommand(storage, coordinator),
-    registerAddCommand(storage, coordinator, statusBar),
+    registerAddCommand(storage, githubService, coordinator, statusBar),
     registerEditCommand(storage, coordinator, statusBar),
     registerDeleteCommand(storage, coordinator, statusBar),
     registerSyncReposCommand(storage, coordinator),

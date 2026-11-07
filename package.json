@@ -2,7 +2,7 @@
   "name": "git-profile-sync",
   "displayName": "Git Profile & Workspace Sync",
   "description": "Dynamically switch Git commit author, GitHub push credentials, and PortableGit/<username> repositories with zero identity mismatch.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publisher": "nathaniel-faborada",
   "icon": "icon.png",
   "sponsor": {
@@ -102,7 +102,7 @@
         },
         "gitProfileSwitch.autoDetectFromRepo": {
           "type": "boolean",
-          "default": true,
+          "default": false,
           "description": "Automatically detect and apply the matching Git profile based on the open repository path or remote owner."
         }
       }

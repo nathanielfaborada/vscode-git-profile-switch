@@ -22,6 +22,32 @@ export class GitHubService {
     };
   }
 
+  public async fetchGitHubUserIdentity(
+    username: string,
+    token?: string
+  ): Promise<{ id: number; login: string; name: string | null; noreplyEmail: string } | undefined> {
+    const clean = username.trim();
+    if (!clean) {
+      return undefined;
+    }
+    try {
+      const response = await this.requestJson<{
+        id: number;
+        login: string;
+        name: string | null;
+      }>(`/users/${encodeURIComponent(clean)}`, token);
+      const { id, login, name } = response.data;
+      return {
+        id,
+        login,
+        name,
+        noreplyEmail: `${id}+${login}@users.noreply.github.com`,
+      };
+    } catch {
+      return undefined;
+    }
+  }
+
   public async fetchAllProfileRepositories(
     profile: GitProfile,
     token?: string
@@ -201,7 +227,7 @@ export class GitHubService {
   ): Promise<{ data: T; scopes: string }> {
     return new Promise((resolve, reject) => {
       const headers: Record<string, string> = {
-        'User-Agent': 'vscode-git-profile-switch/1.0.0',
+        'User-Agent': 'vscode-git-profile-switch/1.0.1',
         Accept: 'application/vnd.github+json',
       };
 
