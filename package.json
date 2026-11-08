@@ -2,7 +2,7 @@
   "name": "git-profile-sync",
   "displayName": "Git Profile & Workspace Sync",
   "description": "Dynamically switch Git commit author, GitHub push credentials, and PortableGit/<username> repositories with zero identity mismatch.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "publisher": "nathaniel-faborada",
   "icon": "icon.png",
   "sponsor": {
@@ -72,8 +72,8 @@
       "properties": {
         "gitProfileSwitch.portableGitRoot": {
           "type": "string",
-          "default": "C:\\Users\\user\\Downloads\\PortableGit",
-          "description": "Root path to PortableGit where per-user folders (PortableGit/<username>/<repos>) are stored."
+          "default": "",
+          "description": "Root path to PortableGit where per-user folders (PortableGit/<username>/<repos>) are stored. Leave blank to auto-detect dynamically for the current OS user."
         },
         "gitProfileSwitch.profiles": {
           "type": "array",
@@ -102,7 +102,7 @@
         },
         "gitProfileSwitch.autoDetectFromRepo": {
           "type": "boolean",
-          "default": false,
+          "default": true,
           "description": "Automatically detect and apply the matching Git profile based on the open repository path or remote owner."
         }
       }

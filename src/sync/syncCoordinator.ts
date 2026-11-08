@@ -31,7 +31,14 @@ export class SyncCoordinator implements vscode.Disposable {
     openInNewWindow: boolean
   ): Promise<void> {
     if (!fs.existsSync(profileDir)) {
-      fs.mkdirSync(profileDir, { recursive: true });
+      try {
+        fs.mkdirSync(profileDir, { recursive: true });
+      } catch (err) {
+        vscode.window.showErrorMessage(
+          `Cannot create profile folder "${profileDir}": ${err instanceof Error ? err.message : String(err)}`
+        );
+        return;
+      }
     }
 
     if (openInNewWindow) {

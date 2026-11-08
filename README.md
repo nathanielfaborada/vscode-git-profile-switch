@@ -13,29 +13,37 @@ It also keeps your projects organized on disk by giving each account its own fol
 ```text
 PortableGit/
  ├── john-dev/
- │    ├── portfolio-site/
- │    └── side-project/
- ├── acme-corp/
- │    ├── core-api/
- │    └── customer-dashboard/
- └── school-projects/
-      └── lab-assignments/
+ │    ├── Personal/
+ │    │    ├── portfolio-site/
+ │    │    └── side-project/
+ │    └── Organizations/
+ │         └── open-source-club/
+ │              └── club-website/
+ └── acme-corp/
+      ├── Personal/
+      │    └── dotfiles/
+      └── Organizations/
+           └── acme-inc/
+                ├── core-api/
+                └── customer-dashboard/
 ```
 
-If you connect a GitHub Personal Access Token, the extension can fetch your repositories from GitHub and clone any missing ones into that account's folder. If you already have repositories sitting in your main `PortableGit` folder, it can sort them into the right account folders without touching your `.env` files, virtual environments, or `node_modules`.
+If you connect a GitHub Personal Access Token, the extension can fetch your repositories from GitHub and clone any missing ones into that account's `Personal/` or `Organizations/<org>/` folder. If you already have repositories sitting in your main `PortableGit` folder, it can sort them into the right account folders without touching your `.env` files, virtual environments, or `node_modules`.
 
-When you open a project in VS Code, the extension checks which account owns the repository and switches to the matching profile automatically. Your GitHub tokens are stored in VS Code's built-in secret storage rather than in plain text settings files.
+When you install the extension or open a project in VS Code, it automatically detects your machine's existing Git configuration (`~/.gitconfig`, `PortableGit/etc/gitconfig`, and local repositories) and switches to the matching profile dynamically—with zero hardcoded paths or accounts. Your GitHub tokens are stored in VS Code's built-in secret storage rather than in plain text settings files.
 
 ## Getting Started
 
-### 1. Add a Profile
+### 1. Automatic Detection or Add a Profile
+
+On first launch, the extension automatically scans your current Git configuration and `PortableGit` directory to import existing accounts. To add another account:
 
 1. Open the Command Palette (`Ctrl+Shift+P` on Windows/Linux or `Cmd+Shift+P` on macOS).
 2. Run **Git Profile: Add New Profile (Create)**.
 3. Fill in the prompts:
    - A short label for the account, such as `Personal` or `Work`.
    - Your GitHub username (for example, `john-dev`).
-   - The name and email address you want shown on your commits.
+   - Your commit author name and email (the extension automatically looks up and pre-fills your GitHub-bound `id+username@users.noreply.github.com` address so commits are always attributed to the right GitHub account).
    - Your GitHub Personal Access Token (optional, needed if you want private repo cloning and automatic push login).
 
 ### 2. Switch Accounts
@@ -63,7 +71,7 @@ You can adjust these options in VS Code Settings (`Ctrl+,` and search for `Git P
 
 | Setting | Default | Description |
 | :--- | :--- | :--- |
-| `gitProfileSwitch.portableGitRoot` | `C:\PortableGit` | Main folder where your per-account folders are stored |
+| `gitProfileSwitch.portableGitRoot` | `""` *(Auto-detected)* | Root path to `PortableGit` where per-account folders are stored. When blank, dynamically detects `~/Downloads/PortableGit`, `~/PortableGit`, or the current workspace's `PortableGit` folder. |
 | `gitProfileSwitch.autoCloneOnSwitch` | `true` | Clone missing GitHub repos automatically when you switch accounts |
 | `gitProfileSwitch.autoOpenProfileWorkspace` | `"prompt"` | Ask before switching the Explorer sidebar to the account's folder (`"prompt"`, `"always"`, or `"never"`) |
 | `gitProfileSwitch.autoDetectFromRepo` | `true` | Switch to the matching profile automatically when you open a repo |
@@ -74,12 +82,12 @@ If you are installing the extension manually from a `.vsix` file instead of the 
 
 1. Open VS Code.
 2. Press `Ctrl+Shift+P` and run **Extensions: Install from VSIX...**
-3. Pick `git-profile-sync-1.0.0.vsix`.
+3. Pick `git-profile-sync-1.0.2.vsix`.
 
 Or install it from a terminal:
 
 ```powershell
-code --install-extension git-profile-sync-1.0.0.vsix
+code --install-extension git-profile-sync-1.0.2.vsix
 ```
 
 ## Support

@@ -177,7 +177,11 @@ export class GitService {
 
     const profileDir = this.storage.getProfileDirectory(profile);
     if (!fs.existsSync(profileDir)) {
-      fs.mkdirSync(profileDir, { recursive: true });
+      try {
+        fs.mkdirSync(profileDir, { recursive: true });
+      } catch {
+        // Ignore if target root is read-only or not yet created
+      }
     }
     await this.syncAllFolderIncludeIfConfigs(profile).catch(() => undefined);
     this.ensureGitBashPromptConfig();

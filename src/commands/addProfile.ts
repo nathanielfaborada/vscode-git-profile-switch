@@ -39,7 +39,7 @@ export function registerAddCommand(
     const githubUsername = await vscode.window.showInputBox({
       title: 'Add Git Profile (3/6): GitHub Username',
       prompt: 'Enter the GitHub username (used for PortableGit/<username> folder and push auth)',
-      placeHolder: 'e.g., nathanielfaborada or jane',
+      placeHolder: 'e.g., octocat or jane-dev',
       validateInput: (val) => (!val.trim() ? 'GitHub username is required' : null),
     });
     if (!githubUsername) {
@@ -87,7 +87,7 @@ export function registerAddCommand(
       title: 'Optional: Auto-Match GitHub Organizations / Owners',
       prompt: 'Comma-separated GitHub orgs/users that belong to this profile',
       value: githubUsername.trim(),
-      placeHolder: 'e.g., Power-Tractire-Inc, Track-Speed',
+      placeHolder: 'e.g., my-company-org, team-workspace',
     });
 
     const id = githubUsername
