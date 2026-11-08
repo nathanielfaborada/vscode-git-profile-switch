@@ -28,7 +28,7 @@ PortableGit/
                 └── customer-dashboard/
 ```
 
-If you connect a GitHub Personal Access Token, the extension can fetch your repositories from GitHub and clone any missing ones into that account's `Personal/` or `Organizations/<org>/` folder. If you already have repositories sitting in your main `PortableGit` folder, it can sort them into the right account folders without touching your `.env` files, virtual environments, or `node_modules`.
+If you connect a GitHub Personal Access Token, the extension can fetch your repositories from GitHub, clone any missing ones into that account's `Personal/` or `Organizations/<org>/` folder, and automatically remove local copies of repositories that were deleted or renamed on GitHub. If you already have repositories sitting in your main `PortableGit` folder, it can sort them into the right account folders without touching your `.env` files, virtual environments, or `node_modules`.
 
 When you install the extension or open a project in VS Code, it automatically detects your machine's existing Git configuration (`~/.gitconfig`, `PortableGit/etc/gitconfig`, and local repositories) and switches to the matching profile dynamically—with zero hardcoded paths or accounts. Your GitHub tokens are stored in VS Code's built-in secret storage rather than in plain text settings files.
 

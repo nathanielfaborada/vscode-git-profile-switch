@@ -33,6 +33,7 @@ export interface SyncSummary {
   totalRemoteRepos: number;
   clonedRepos: string[];
   updatedRepos: string[];
+  removedRepos: string[];
   failedRepos: Array<{ name: string; error: string }>;
 }
 

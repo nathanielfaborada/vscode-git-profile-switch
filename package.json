@@ -2,7 +2,7 @@
   "name": "git-profile-sync",
   "displayName": "Git Profile & Workspace Sync",
   "description": "Dynamically switch Git commit author, GitHub push credentials, and PortableGit/<username> repositories with zero identity mismatch.",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "publisher": "nathaniel-faborada",
   "icon": "icon.png",
   "sponsor": {

@@ -104,7 +104,8 @@ export class SyncCoordinator implements vscode.Disposable {
             const summary = await this.githubService.syncProfileRepositories(
               profile,
               progress,
-              cancelToken
+              cancelToken,
+              currentWorkspace
             );
 
             const parts: string[] = [];
@@ -116,6 +117,9 @@ export class SyncCoordinator implements vscode.Disposable {
             }
             if (summary.updatedRepos.length > 0) {
               parts.push(`${summary.updatedRepos.length} synced`);
+            }
+            if (summary.removedRepos.length > 0) {
+              parts.push(`${summary.removedRepos.length} removed`);
             }
             if (summary.failedRepos.length > 0) {
               parts.push(`${summary.failedRepos.length} failed`);

@@ -131,13 +131,18 @@ export class GitHubService {
   public async syncProfileRepositories(
     profile: GitProfile,
     progress?: vscode.Progress<{ message?: string; increment?: number }>,
-    cancellationToken?: vscode.CancellationToken
+    cancellationToken?: vscode.CancellationToken,
+    activeWorkspacePath?: string
   ): Promise<SyncSummary> {
     const token = await this.storage.getToken(profile.id);
     const profileDir = this.storage.getProfileDirectory(profile);
 
     if (!fs.existsSync(profileDir)) {
-      fs.mkdirSync(profileDir, { recursive: true });
+      try {
+        fs.mkdirSync(profileDir, { recursive: true });
+      } catch {
+        // Ignore if directory cannot be created
+      }
     }
 
     progress?.report({ message: `Fetching repositories for ${profile.githubUsername} from GitHub...` });
@@ -145,7 +150,11 @@ export class GitHubService {
 
     const clonedRepos: string[] = [];
     const updatedRepos: string[] = [];
+    const removedRepos: string[] = [];
     const failedRepos: Array<{ name: string; error: string }> = [];
+
+    const validTargetPaths = new Set<string>();
+    const validRepoNames = new Set<string>();
 
     const total = remoteRepos.length;
     const stepIncrement = total > 0 ? 100 / total : 100;
@@ -161,9 +170,16 @@ export class GitHubService {
         repo.owner.login,
         repo.name
       );
+      validTargetPaths.add(path.resolve(targetRepoPath).toLowerCase());
+      validRepoNames.add(repo.name.toLowerCase());
+
       const targetParentDir = path.dirname(targetRepoPath);
       if (!fs.existsSync(targetParentDir)) {
-        fs.mkdirSync(targetParentDir, { recursive: true });
+        try {
+          fs.mkdirSync(targetParentDir, { recursive: true });
+        } catch {
+          // Ignore if parent directory cannot be created
+        }
       }
 
       if (fs.existsSync(targetRepoPath) && this.gitService.isGitRepository(targetRepoPath)) {
@@ -206,14 +222,107 @@ export class GitHubService {
       }
     }
 
+    // Prune local repositories in profileDir that were deleted or renamed on GitHub
+    if (!cancellationToken?.isCancellationRequested && remoteRepos.length > 0) {
+      progress?.report({
+        message: `Cleaning up local repositories no longer on GitHub for ${profile.githubUsername}...`,
+      });
+      const localRepos = this.gitService.findAllRepositoriesInDir(profileDir);
+      const normalizedActiveWorkspace = activeWorkspacePath
+        ? path.resolve(activeWorkspacePath).toLowerCase()
+        : undefined;
+
+      for (const localRepoPath of localRepos) {
+        if (cancellationToken?.isCancellationRequested) {
+          break;
+        }
+        const normalizedLocal = path.resolve(localRepoPath).toLowerCase();
+        if (validTargetPaths.has(normalizedLocal)) {
+          continue;
+        }
+        if (normalizedActiveWorkspace && normalizedLocal === normalizedActiveWorkspace) {
+          continue;
+        }
+
+        const folderName = path.basename(localRepoPath);
+        const shouldRemove = await this.isRepoDeletedOrRenamedOnGitHub(
+          localRepoPath,
+          folderName,
+          profile,
+          token,
+          validRepoNames
+        );
+
+        if (shouldRemove) {
+          try {
+            fs.rmSync(localRepoPath, { recursive: true, force: true });
+            removedRepos.push(folderName);
+          } catch {
+            // Skip if locked by another process
+          }
+        }
+      }
+    }
+
     return {
       profile,
       profileDir,
       totalRemoteRepos: remoteRepos.length,
       clonedRepos,
       updatedRepos,
+      removedRepos,
       failedRepos,
     };
+  }
+
+  private async isRepoDeletedOrRenamedOnGitHub(
+    localRepoPath: string,
+    folderName: string,
+    profile: GitProfile,
+    token: string | undefined,
+    validRepoNames: Set<string>
+  ): Promise<boolean> {
+    // If a PAT token is configured, fetchAllProfileRepositories already returned all accessible public + private repos
+    if (token && token.trim() && !validRepoNames.has(folderName.toLowerCase())) {
+      return true;
+    }
+
+    const originUrl = await this.gitService
+      .execGit(['remote', 'get-url', 'origin'], localRepoPath)
+      .catch(() => '');
+    const parsed = this.gitService.parseGitHubRemote(originUrl);
+    const owner = parsed?.owner || profile.githubUsername;
+
+    // Check GitHub API for 404 (deleted) or rename redirect (canonical name differs from folderName)
+    try {
+      const response = await this.requestJson<{ name: string }>(
+        `/repos/${encodeURIComponent(owner)}/${encodeURIComponent(folderName)}`,
+        token
+      );
+      if (
+        response.data?.name &&
+        response.data.name.toLowerCase() !== folderName.toLowerCase() &&
+        validRepoNames.has(response.data.name.toLowerCase())
+      ) {
+        return true;
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      if (msg.includes('HTTP 404')) {
+        // Verify with git ls-remote whether it's truly deleted vs a private repo accessible via Git Credential Manager
+        try {
+          await this.gitService.execGit(['ls-remote', '--exit-code', 'origin', 'HEAD'], localRepoPath);
+          return false;
+        } catch (gitErr) {
+          const gitMsg = gitErr instanceof Error ? gitErr.message.toLowerCase() : '';
+          if (gitMsg.includes('not found') || gitMsg.includes('repository not found')) {
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
   }
 
   private async fetchPaginatedRepos(endpoint: string, token?: string): Promise<GitHubRepo[]> {
